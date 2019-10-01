@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Find your GitHub user id</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <style type="text/css" media="screen">
+      body {
+        font-size: 200%;
+        text-align: center;
+        margin: auto 0;
+        margin-top: 5em;
+        font-family: Courier, monospace;
+      }
+
+      label {
+        display: block;
+      }
+
+      input[type=text] {
+        font-size: 80%;
+      }
+
+      #success,
+      form p {
+        display: none;
+      }
+
+      #footer {
+        margin-top: 5em;
+        font-size: 50%;
+        color: #555;
+      }
+
+      #footer a {
+        color: #555;
+        text-decoration: none;
+        border-bottom: 1px dotted;
+      }
+    </style>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" charset="utf-8">
+
+    function get_github_id_for (username, callback) {
+
+      $.getJSON('https://api.github.com/users/' + username + "?callback=?", {},
+       function(json){
+         var id = json["data"]["id"]
+         if (id) {
+           callback(username, id)
+         }
+         return false
+      });
+    }
+
+    function add_twitter_link_for (username, id) {
+      var tweet = $('<a>').text("Tweet this").attr('href', "https://twitter.com/share?ref_src=twsrc%5Etfw=" + encodeURIComponent("Found out I'm GitHub user " + id + " by using https://compcode.github.io/Github-id/#" + username + " #GitHub_id")).insertAfter("#success h1")
+    }
+
+    function show_user (username, id) {
+      $('#username').text(username)
+      $('#id').text(id)
+      $('form').hide()
+      $('#success').show()
+    }
+
+    $(document).ready(function() {
+
+      if (document.location.hash) {
+        // $('form p').show()
+        var name = document.location.hash.match(/^#(.*?)$/)[1]
+        get_github_id_for(name, function(username, id) {
+          show_user(username, id)
+          // $('form p').hide()
+          $('form h1').hide()
+          $('form').show()
+        })
+      }
+
+      $('form').submit(function(event) {
+        event.preventDefault()
+
+        $('form p').show()
+        var name = $("#github_username").val().trim()
+
+        get_github_id_for(name, function(username, id) {
+          add_twitter_link_for(username, id)
+          show_user(username, id)
+          document.location.hash = "#" + username
+        })
+
+        return false
+      });
+
+    });
+    </script>
+  </head>
+  <body>
+  <div id="fb-root"></div>
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v4.0&appId=443344326514646&autoLogAppEvents=1"></script>
+<div class="container">
+    <div id="success">
+      <h1 class="alert alert-success" role="alert"><span id="username"></span> is GitHub user #<span id="id"></span></h1>
+    </div>
+
+    <form id="input" action="#" accept-charset="utf-8">
+      <h1>Find GitHub User ID</h1>
+      <a href="https://twitter.com/soykothasn?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false">Follow @soykothasn</a>
+      <p class="lead">For Finding Your Github User ID; Input Your Github Username On the Form And Type Find, Ok.</p>
+      <div class="input-group input-group-lg">
+  <span class="input-group-addon" id="sizing-addon1">@</span>
+  <input type="text" class="form-control" name="github_username" id="github_username" placeholder="Username" aria-describedby="sizing-addon1">
+</div>
+
+      <br />
+      <input class="btn btn-danger" type="submit" value="Find id &rarr;" />
+      <p>Finding&hellip;</p>
+    </form>
+<br />
+<br />
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Comment</h3>
+  </div>
+  <div class="panel-body">
+  	<div class="fb-comments" data-href="https://github.com/compcode/Github-id" data-width="" data-numposts="5"></div>
+  </div>
+</div>
+
+    <div id="footer">
+    <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a>
+      <p>A hack born out of idle curiosity by GitHub user #696: <a href="https://github.com/soykothasan">Soykothasan</a></p>
+    </div>
+    </div>
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </body>
+</html>
